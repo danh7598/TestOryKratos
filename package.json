@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev3002": "next dev -p 3002"
   },
   "dependencies": {
+    "@ory/client": "^0.0.1-alpha.189",
+    "@ory/integrations": "^0.2.6",
     "next": "12.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0"

@@ -1,9 +1,40 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import styles from '../styles/Home.module.css';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
+import { Configuration, V0alpha2Api, Session, Identity } from '@ory/client';
+import { edgeConfig } from '@ory/integrations/next';
+
+const ory = new V0alpha2Api(new Configuration(edgeConfig));
+
+// Returns either the email or the username depending on the user's Identity Schema
+const getUserName = (identity: Identity) =>
+  identity.traits.email || identity.traits.username;
 
 const Home: NextPage = () => {
+  const router = useRouter();
+
+  const [session, setSession] = useState<Session | undefined>();
+  useEffect(() => {
+    ory
+      .toSession()
+      .then(({ data }) => {
+        // User has a session!
+        setSession(data);
+      })
+      .catch(() => {
+        // Redirect to login page
+        return router.push(edgeConfig.basePath + '/ui/login');
+      });
+  });
+
+  if (!session) {
+    // Still loading
+    return null;
+  }
   return (
     <div className={styles.container}>
       <Head>
@@ -14,7 +45,9 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to <a href="https://nextjs.org">Next.js !</a> {
+            getUserName(session?.identity)
+          }
         </h1>
 
         <p className={styles.description}>
@@ -28,10 +61,12 @@ const Home: NextPage = () => {
             <p>Find in-depth information about Next.js features and API.</p>
           </a>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
+          <div onClick={() => {
+            router.push(edgeConfig.basePath + '/ui/login');
+          }} className={styles.card}>
             <h2>Learn &rarr;</h2>
             <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+          </div>
 
           <a
             href="https://github.com/vercel/next.js/tree/canary/examples"
@@ -66,7 +101,7 @@ const Home: NextPage = () => {
         </a>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
