@@ -17,24 +17,24 @@ const getUserName = (identity: Identity) =>
 const Home: NextPage = () => {
   const router = useRouter();
 
-  // const [session, setSession] = useState<Session | undefined>();
-  // useEffect(() => {
-  //   ory
-  //     .toSession()
-  //     .then(({ data }) => {
-  //       // User has a session!
-  //       setSession(data);
-  //     })
-  //     .catch(() => {
-  //       // Redirect to login page
-  //       return router.push(edgeConfig.basePath + '/ui/login');
-  //     });
-  // });
+  const [session, setSession] = useState<Session | undefined>();
+  useEffect(() => {
+    ory
+      .toSession()
+      .then(({ data }) => {
+        // User has a session!
+        setSession(data);
+      })
+      .catch(() => {
+        // Redirect to login page
+        return router.push(edgeConfig.basePath + '/ui/login');
+      });
+  });
 
-  // if (!session) {
-  //   // Still loading
-  //   return null;
-  // }
+  if (!session) {
+    // Still loading
+    return null;
+  }
   return (
     <div className={styles.container}>
       <Head>
@@ -45,10 +45,9 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js !</a>
-          {/* {
+          Welcome to <a href="https://nextjs.org">Next.js !</a> {
             getUserName(session?.identity)
-          } */}
+          }
         </h1>
 
         <p className={styles.description}>
